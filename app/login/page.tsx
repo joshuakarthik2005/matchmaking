@@ -18,16 +18,25 @@ export default function LoginPage() {
     email: "",
     password: "",
   })
+  const [role, setRole] = useState<"buyer" | "provider">("buyer")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRole(e.target.value as "buyer" | "provider")
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // In a real app, you would authenticate with your backend
-    router.push("/dashboard")
+    if (role === "buyer") {
+      router.push("/dashboard/buyer")
+    } else {
+      router.push("/dashboard/provider")
+    }
   }
 
   return (
@@ -81,6 +90,31 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
                 </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Select your role</Label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="buyer"
+                    checked={role === "buyer"}
+                    onChange={handleRoleChange}
+                  />
+                  Buyer
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="provider"
+                    checked={role === "provider"}
+                    onChange={handleRoleChange}
+                  />
+                  Provider
+                </label>
               </div>
             </div>
             <Button type="submit" className="w-full">
