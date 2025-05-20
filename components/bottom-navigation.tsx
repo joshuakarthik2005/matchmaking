@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Heart, MessageCircle, User } from "lucide-react"
+import { Home, Star, MessageCircle, User } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -17,7 +17,7 @@ export function BottomNavigation() {
     {
       label: "Matches",
       href: "/matches",
-      icon: Heart,
+      icon: Star,
     },
     {
       label: "Messages",

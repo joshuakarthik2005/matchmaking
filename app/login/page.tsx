@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff } from "lucide-react"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { SimpleRadioGroup, SimpleRadioGroupItem } from "@/components/ui/simple-radio-group"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -27,16 +27,30 @@ export default function LoginPage() {
   }
 
   const handleUserTypeChange = (value: string) => {
+    console.log("User type changed to:", value)
     setFormData((prev) => ({ ...prev, userType: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // In a real app, you would authenticate with your backend
-    if (formData.userType === "buyer") {
-      router.push("/home")
-    } else {
+    console.log("Form submitted with user type:", formData.userType)
+
+    // Extract name from email for demo purposes
+    const emailName = formData.email.split("@")[0] || "User"
+    const formattedName = emailName.charAt(0).toUpperCase() + emailName.slice(1)
+
+    // Store user info in localStorage
+    localStorage.setItem("userName", formattedName)
+    localStorage.setItem("userType", formData.userType)
+    localStorage.setItem("userEmail", formData.email)
+
+    if (formData.userType === "provider") {
+      console.log("Redirecting to provider dashboard")
       router.push("/dashboard")
+    } else {
+      console.log("Redirecting to buyer home")
+      router.push("/home")
     }
   }
 
@@ -95,20 +109,10 @@ export default function LoginPage() {
             </div>
             <div className="space-y-2">
               <Label>I am a</Label>
-              <RadioGroup defaultValue={formData.userType} onValueChange={handleUserTypeChange} className="flex gap-4">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="buyer" id="buyer" />
-                  <Label htmlFor="buyer" className="cursor-pointer">
-                    Buyer
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="provider" id="provider" />
-                  <Label htmlFor="provider" className="cursor-pointer">
-                    Provider
-                  </Label>
-                </div>
-              </RadioGroup>
+              <SimpleRadioGroup value={formData.userType} onValueChange={handleUserTypeChange} className="flex gap-4">
+                <SimpleRadioGroupItem value="buyer" id="buyer" />
+                <SimpleRadioGroupItem value="provider" id="provider" />
+              </SimpleRadioGroup>
             </div>
             <Button type="submit" className="w-full">
               Log In

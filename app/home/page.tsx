@@ -6,55 +6,80 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Heart, MessageCircle, Settings, Search } from "lucide-react"
+import { MessageCircle, Settings, Search, Star, MapPin, Clock, CheckCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { BottomNavigation } from "@/components/bottom-navigation"
 
 export default function HomePage() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState("demand")
+  const [activeTab, setActiveTab] = useState("recommended")
   const [isLoading, setIsLoading] = useState(true)
-  const [profiles, setProfiles] = useState<any[]>([])
+  const [providers, setProviders] = useState<any[]>([])
+  const [userName, setUserName] = useState("User")
 
   useEffect(() => {
+    // Try to get user name from localStorage
+    const storedName = localStorage.getItem("userName") || "User"
+    setUserName(storedName)
+
     // Simulate loading data
     const timer = setTimeout(() => {
-      setProfiles([
+      setProviders([
         {
           id: 1,
-          name: "Sophia",
-          age: 28,
+          name: "John's Plumbing Services",
+          category: "Home Repair",
+          subcategory: "Plumbing",
           location: "New York, NY",
-          interests: ["Photography", "Travel", "Cooking"],
+          distance: "3.2 miles away",
+          rating: 4.8,
+          reviews: 124,
+          availability: "Available today",
+          verified: true,
           avatar: "/placeholder.svg?height=100&width=100",
-          compatibility: 92,
+          matchScore: 92,
         },
         {
           id: 2,
-          name: "James",
-          age: 31,
-          location: "Los Angeles, CA",
-          interests: ["Hiking", "Movies", "Music"],
+          name: "TechSolutions Inc.",
+          category: "Technology",
+          subcategory: "Web Development",
+          location: "Remote",
+          distance: null,
+          rating: 4.9,
+          reviews: 89,
+          availability: "Available within 48 hours",
+          verified: true,
           avatar: "/placeholder.svg?height=100&width=100",
-          compatibility: 87,
+          matchScore: 87,
         },
         {
           id: 3,
-          name: "Emma",
-          age: 26,
+          name: "MoveMasters",
+          category: "Moving Services",
+          subcategory: "Residential Moving",
           location: "Chicago, IL",
-          interests: ["Reading", "Yoga", "Art"],
+          distance: "5.8 miles away",
+          rating: 4.7,
+          reviews: 56,
+          availability: "Available next week",
+          verified: false,
           avatar: "/placeholder.svg?height=100&width=100",
-          compatibility: 85,
+          matchScore: 85,
         },
         {
           id: 4,
-          name: "Michael",
-          age: 30,
-          location: "Austin, TX",
-          interests: ["Fitness", "Technology", "Coffee"],
+          name: "Creative Designs",
+          category: "Design",
+          subcategory: "Graphic Design",
+          location: "Remote",
+          distance: null,
+          rating: 4.9,
+          reviews: 78,
+          availability: "Available immediately",
+          verified: true,
           avatar: "/placeholder.svg?height=100&width=100",
-          compatibility: 81,
+          matchScore: 81,
         },
       ])
       setIsLoading(false)
@@ -67,7 +92,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b sticky top-0 z-10 bg-background">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-primary">MatchAI</h1>
+          <h1 className="text-xl font-bold text-primary">MatchMaker</h1>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon" onClick={() => router.push("/search")}>
               <Search className="h-5 w-5" />
@@ -81,17 +106,18 @@ export default function HomePage() {
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-lg">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2 fade-in">Hello Sheriar!</h2>
-          <p className="text-muted-foreground fade-in">Here are your matches for today</p>
+          <h2 className="text-2xl font-bold mb-2 fade-in">Hello {userName}!</h2>
+          <p className="text-muted-foreground fade-in">Find the perfect service providers for your needs</p>
         </div>
 
-        <Tabs defaultValue="demand" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="demand">Demand</TabsTrigger>
-            <TabsTrigger value="supply">Supply</TabsTrigger>
+        <Tabs defaultValue="recommended" className="w-full" onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="recommended">Recommended</TabsTrigger>
+            <TabsTrigger value="nearby">Nearby</TabsTrigger>
+            <TabsTrigger value="top-rated">Top Rated</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="demand" className="space-y-4">
+          <TabsContent value="recommended" className="space-y-4">
             {isLoading
               ? Array(4)
                   .fill(0)
@@ -114,9 +140,9 @@ export default function HomePage() {
                       </CardContent>
                     </Card>
                   ))
-              : profiles.map((profile, index) => (
+              : providers.map((provider, index) => (
                   <Card
-                    key={profile.id}
+                    key={provider.id}
                     className="overflow-hidden slide-in"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
@@ -124,30 +150,39 @@ export default function HomePage() {
                       <div className="p-4">
                         <div className="flex items-center space-x-4 mb-3">
                           <Avatar className="h-12 w-12 border-2 border-primary">
-                            <AvatarImage src={profile.avatar || "/placeholder.svg"} alt={profile.name} />
-                            <AvatarFallback>{profile.name.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={provider.avatar || "/placeholder.svg"} alt={provider.name} />
+                            <AvatarFallback>{provider.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <div>
                             <div className="flex items-center">
-                              <h3 className="font-semibold">
-                                {profile.name}, {profile.age}
-                              </h3>
+                              <h3 className="font-semibold">{provider.name}</h3>
+                              {provider.verified && <CheckCircle className="h-4 w-4 text-green-500 ml-1" />}
                               <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
-                                {profile.compatibility}% Match
+                                {provider.matchScore}% Match
                               </Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground">{profile.location}</p>
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Star className="h-3 w-3 text-amber-500 mr-1" />
+                              <span>{provider.rating}</span>
+                              <span className="mx-1">•</span>
+                              <span>{provider.reviews} reviews</span>
+                            </div>
                           </div>
                         </div>
 
                         <div className="mb-3">
-                          <p className="text-sm">Interests:</p>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {profile.interests.map((interest: string) => (
-                              <Badge key={interest} variant="secondary" className="text-xs">
-                                {interest}
-                              </Badge>
-                            ))}
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            <Badge variant="secondary">{provider.category}</Badge>
+                            <Badge variant="outline">{provider.subcategory}</Badge>
+                          </div>
+                          <div className="flex items-center text-sm text-muted-foreground mb-1">
+                            <MapPin className="h-3 w-3 mr-1" />
+                            <span>{provider.location}</span>
+                            {provider.distance && <span className="ml-1">({provider.distance})</span>}
+                          </div>
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Clock className="h-3 w-3 mr-1" />
+                            <span>{provider.availability}</span>
                           </div>
                         </div>
 
@@ -155,17 +190,13 @@ export default function HomePage() {
                           <Button
                             variant="outline"
                             className="flex-1"
-                            onClick={() => router.push(`/chat/${profile.id}`)}
+                            onClick={() => router.push(`/chat/${provider.id}`)}
                           >
                             <MessageCircle className="mr-2 h-4 w-4" />
-                            Chat
+                            Contact
                           </Button>
-                          <Button
-                            className="flex-1 bg-rose-500 hover:bg-rose-600"
-                            onClick={() => router.push(`/profile/${profile.id}`)}
-                          >
-                            <Heart className="mr-2 h-4 w-4" />
-                            Connect
+                          <Button className="flex-1" onClick={() => router.push(`/provider/${provider.id}`)}>
+                            View Details
                           </Button>
                         </div>
                       </div>
@@ -174,10 +205,17 @@ export default function HomePage() {
                 ))}
           </TabsContent>
 
-          <TabsContent value="supply" className="space-y-4">
+          <TabsContent value="nearby" className="space-y-4">
             <Card className="p-6 text-center">
-              <p className="text-muted-foreground mb-4">Complete your profile to appear in others' matches</p>
-              <Button onClick={() => router.push("/profile")}>Complete Profile</Button>
+              <p className="text-muted-foreground mb-4">Enable location services to see nearby service providers</p>
+              <Button onClick={() => router.push("/browse?filter=nearby")}>Enable Location</Button>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="top-rated" className="space-y-4">
+            <Card className="p-6 text-center">
+              <p className="text-muted-foreground mb-4">Browse top-rated service providers in your area</p>
+              <Button onClick={() => router.push("/browse?filter=top-rated")}>View All Top Rated</Button>
             </Card>
           </TabsContent>
         </Tabs>
