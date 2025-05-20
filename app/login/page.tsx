@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff } from "lucide-react"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,25 +18,25 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    userType: "buyer", // Default to buyer
   })
-  const [role, setRole] = useState<"buyer" | "provider">("buyer")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRole(e.target.value as "buyer" | "provider")
+  const handleUserTypeChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, userType: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // In a real app, you would authenticate with your backend
-    if (role === "buyer") {
-      router.push("/dashboard/buyer")
+    if (formData.userType === "buyer") {
+      router.push("/home")
     } else {
-      router.push("/dashboard/provider")
+      router.push("/dashboard")
     }
   }
 
@@ -93,29 +94,21 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Select your role</Label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="buyer"
-                    checked={role === "buyer"}
-                    onChange={handleRoleChange}
-                  />
-                  Buyer
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="provider"
-                    checked={role === "provider"}
-                    onChange={handleRoleChange}
-                  />
-                  Provider
-                </label>
-              </div>
+              <Label>I am a</Label>
+              <RadioGroup defaultValue={formData.userType} onValueChange={handleUserTypeChange} className="flex gap-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="buyer" id="buyer" />
+                  <Label htmlFor="buyer" className="cursor-pointer">
+                    Buyer
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="provider" id="provider" />
+                  <Label htmlFor="provider" className="cursor-pointer">
+                    Provider
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
             <Button type="submit" className="w-full">
               Log In
